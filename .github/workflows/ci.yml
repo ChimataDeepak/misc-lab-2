@@ -1,0 +1,17 @@
+name: polyglot-sdks
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { lang: node,   image: "node:20",                          cmd: "npm ci --no-audit --no-fund && npx tsc -p . --noEmit && npx vitest run" }
+          - { lang: cpp,    image: "gcc:13",                           cmd: "./build-and-test.sh" }
+          - { lang: csharp, image: "mcr.microsoft.com/dotnet/sdk:8.0", cmd: "dotnet test tests/Misclab.Webhooks.Tests" }
+          - { lang: ruby,   image: "ruby:3.3",                         cmd: "bundle config set --local path /tmp/bundle && bundle install && bundle exec rspec" }
+    name: ${{ matrix.lang }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker run --rm -v "$PWD":/w -w "/w/${{ matrix.lang }}" "${{ matrix.image }}" sh -c "${{ matrix.cmd }}"

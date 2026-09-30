@@ -1,0 +1,9 @@
+node_modules/
+node/dist/
+bin/
+obj/
+build/
+ruby/.bundle/
+ruby/vendor/
+*.log
+.DS_Store

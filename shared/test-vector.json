@@ -1,0 +1,19 @@
+{
+  "scheme": "Misclab-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256(secret, \"<t>.\" + body)>",
+  "secret": "whsec_test",
+  "timestamp": 1700000000,
+  "body": "{\"id\":\"evt_1\"}",
+  "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925",
+  "toleranceSeconds": 300,
+  "cases": [
+    {"name": "valid", "secret": "whsec_test", "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_1\"}", "now": 1700000010, "expect": "ok"},
+    {"name": "tampered body", "secret": "whsec_test", "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_2\"}", "now": 1700000000, "expect": "mismatch"},
+    {"name": "wrong secret", "secret": "other", "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_1\"}", "now": 1700000000, "expect": "mismatch"},
+    {"name": "moved timestamp", "secret": "whsec_test", "header": "t=1700000060,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_1\"}", "now": 1700000060, "expect": "mismatch"},
+    {"name": "too old", "secret": "whsec_test", "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_1\"}", "now": 1700000301, "expect": "stale"},
+    {"name": "from the future", "secret": "whsec_test", "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_1\"}", "now": 1699999699, "expect": "stale"},
+    {"name": "edge of window", "secret": "whsec_test", "header": "t=1700000000,v1=c89214b5b5da833daed6f0b8c5bb6bd58cea9022bd80ccc78230f3942d632925", "body": "{\"id\":\"evt_1\"}", "now": 1700000300, "expect": "ok"},
+    {"name": "missing v1", "secret": "whsec_test", "header": "t=1700000000", "body": "{\"id\":\"evt_1\"}", "now": 1700000000, "expect": "malformed"},
+    {"name": "garbage", "secret": "whsec_test", "header": "hello", "body": "{\"id\":\"evt_1\"}", "now": 1700000000, "expect": "malformed"}
+  ]
+}
