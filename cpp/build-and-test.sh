@@ -1,7 +1,6 @@
 #!/bin/sh
-# Runs inside the official gcc image: installs cmake + OpenSSL + GoogleTest, builds, runs ctest and a CLI smoke test.
+# Runs inside misc-lab-2/cpp-test:13, which contains the complete build toolchain.
 set -e
-apt-get update -qq >/dev/null && apt-get install -y -qq cmake libssl-dev libgtest-dev >/dev/null
 cmake -S . -B /tmp/build -DCMAKE_BUILD_TYPE=Release >/dev/null
 cmake --build /tmp/build -j >/dev/null
 ctest --test-dir /tmp/build --output-on-failure
